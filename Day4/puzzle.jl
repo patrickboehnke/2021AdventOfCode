@@ -47,3 +47,48 @@ for turn in turnnumbers
 end
 
 println("Puzzle 1 Answer: ", sumgrid*finalturn)
+
+bingogrids = Array{Int16}(undef, 100, 5, 5)
+winninggames = zeros(100)
+for i in 1:size(df, 1)
+    for j in 1:5
+        bingogrids[fld(i -1, 5)+1, i - fld(i-1,5)*5, j] = parse(Int, df[i, :Column1][(j-1)*3+1:j*3-1])
+    end
+end
+resultfound = 0
+for turn in turnnumbers
+    for i in 1:100
+        for j in 1:5
+            for k in 1:5
+                if bingogrids[i, j, k] == turn
+                    bingogrids[i, j, k] = -100
+                end
+            end
+        end
+        temp = bingogrids[i, :, :]
+        if minimum(sum(temp, dims=1)) == -500 || minimum(sum(temp, dims=2)) == -500
+            winninggames[i] = 1
+            if sum(winninggames) == 100
+                global sumgrid = 0
+                global finalturn = turn
+                for k in 1:5
+                    for j in 1:5
+                        if temp[k, j] > -1
+                            global sumgrid += temp[k, j]
+                        end
+                    end
+                end
+                global resultfound = 1
+                break
+            end
+
+            
+        end
+    end
+
+    if resultfound == 1
+        break
+    end
+end
+
+println("Puzzle 2 Answer: ", sumgrid*finalturn)
